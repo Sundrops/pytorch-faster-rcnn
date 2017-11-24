@@ -1,0 +1,28 @@
+EXP_DIR: vgg16
+
+TRAIN:
+  USE_FLIPPED: False
+  HAS_RPN: True
+  IMS_PER_BATCH: 1
+  BBOX_NORMALIZE_TARGETS_PRECOMPUTED: True
+  RPN_POSITIVE_OVERLAP: 0.7
+  RPN_BATCHSIZE: 256
+  PROPOSAL_METHOD: gt
+  BG_THRESH_LO: 0.0
+  DISPLAY: 20
+  BATCH_SIZE: 256
+  SNAPSHOT_PREFIX: vgg16_faster_rcnn
+TEST:
+  HAS_RPN: True
+  IOU_THRESH: 0.5
+  CLEAN_PRE_RESULT: True
+ZDF_GAUSSIAN: False
+ZDF: True
+FC6_IN_CHANNEL: 512
+CLASS_NUMS: 20
+FIX_FEAT: True
+DO_PARSING: True
+POOLING_MODE: crop
+SUB_CATEGORY: False
+LOSS_SUB_CATEGORY_W: 0.5
+# crop_cat_gtscoremap  crop crop_only_gtscoremap pyramid_crop_sum pyramid_crop
