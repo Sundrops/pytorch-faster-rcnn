@@ -175,8 +175,6 @@ def test_net(net, imdb, weights_filename, max_per_image=100, thresh=0.,clean_pre
   """Test a Fast R-CNN network on an image database."""
   num_images = len(imdb.image_index)
 
-  #num_images = 10
-
 
   # all detections are collected into:
   #  all_boxes[cls][image] = N x 5 array of detections in
@@ -212,7 +210,7 @@ def test_net(net, imdb, weights_filename, max_per_image=100, thresh=0.,clean_pre
         mask_target_channel = scores.argmax(1)  # (300,)
         cv2.imwrite('/media/rgh/rgh-data/PycharmProjects/cvpr2018/temp/mask/'+str(i)+str(i)+str(i)+'.jpg',im)
         # print(mask_target_channel)
-        flag = np.zeros(cfg.CLASS_NUMS)
+        flag = np.zeros(imdb.num_classes)
         for m in range(len(mask_target_channel)):
           if mask_target_channel[m]==0 or flag[mask_target_channel[m]] == 1:
             continue

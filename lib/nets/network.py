@@ -398,6 +398,14 @@ class Network(nn.Module):
 
   def _init_modules(self):
     self._init_head_tail()
+    if cfg.LIGHT_RCNN:
+      cmid = 128
+      cout = cfg.FC6_IN_CHANNEL
+      self.lightrcnn_conv1 = nn.Conv2d(512, cmid, [15, 1], padding=(7, 0))
+      self.lightrcnn_conv2 = nn.Conv2d(cmid, cout, [1, 15], padding=(0, 7))
+      self.lightrcnn_conv3 = nn.Conv2d(512, cmid, [1, 15], padding=(0, 7))
+      self.lightrcnn_conv4 = nn.Conv2d(cmid, cout, [15, 1], padding=(7, 0))
+      self._net_conv_channels = cout
 
     # rpn
     self.rpn_net = nn.Conv2d(self._net_conv_channels, cfg.RPN_CHANNELS, [3, 3], padding=1)
@@ -409,10 +417,10 @@ class Network(nn.Module):
     self.cls_score_net = nn.Linear(self._fc7_channels, self._num_classes)
     self.bbox_pred_net = nn.Linear(self._fc7_channels, self._num_classes * 4)
     # added by rgh
-    self.roi_1x1 = nn.Conv2d(self._net_conv_channels, int(self._net_conv_channels/2), [1, 1])
-    self.global_1x1 = nn.Conv2d(self._net_conv_channels, int(self._net_conv_channels/2), [1, 1])
-    self.feat_1x1 = nn.Conv2d(self._net_conv_channels, 492, [1, 1])
-    self.dec_channel = nn.Conv2d(self._net_conv_channels*3, self._net_conv_channels, [1, 1])
+    # self.roi_1x1 = nn.Conv2d(self._net_conv_channels, int(self._net_conv_channels/2), [1, 1])
+    # self.global_1x1 = nn.Conv2d(self._net_conv_channels, int(self._net_conv_channels/2), [1, 1])
+    # self.feat_1x1 = nn.Conv2d(self._net_conv_channels, 492, [1, 1])
+    # self.dec_channel = nn.Conv2d(self._net_conv_channels*3, self._net_conv_channels, [1, 1])
 
     if cfg.ZDF:
       self.global_conv1 = nn.Conv2d(512, 512, 3, stride=2, padding=1)
@@ -452,7 +460,6 @@ class Network(nn.Module):
 
       self.mask_deconv2 = nn.ConvTranspose2d(256, 256, [2, 2], 2)
       self.mask_conv5 = nn.Conv2d(256, self._num_classes, [1, 1])
-
     self.init_weights()
 
   def _run_summary_op(self, val=False):
@@ -510,6 +517,13 @@ class Network(nn.Module):
     # This is just _build_network in tf-faster-rcnn
     torch.backends.cudnn.benchmark = False
     net_conv = self._image_to_head() # 1 512 h/16 w/16
+    if cfg.LIGHT_RCNN:
+      lightrcnn_conv1 = nn.ReLU()(self.lightrcnn_conv1(net_conv))
+      lightrcnn_conv2 = nn.ReLU()(self.lightrcnn_conv2(lightrcnn_conv1))
+
+      lightrcnn_conv3 = nn.ReLU()(self.lightrcnn_conv3(net_conv))
+      lightrcnn_conv4 = nn.ReLU()(self.lightrcnn_conv4(lightrcnn_conv3))
+      net_conv = lightrcnn_conv2 + lightrcnn_conv4
     if cfg.ZDF:
       # TODO:
       unet_down2 = nn.ReLU()(self.global_conv1(net_conv))

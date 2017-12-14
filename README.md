@@ -1,5 +1,5 @@
 # pytorch-faster-rcnn
-fork自[pytorch-faster-rcnn](https://github.com/ruotianluo/pytorch-faster-rcnn)
+fork自[ruotianluo/pytorch-faster-rcnn](https://github.com/ruotianluo/pytorch-faster-rcnn)
 A pytorch implementation of faster RCNN detection framework based on Xinlei Chen's [tf-faster-rcnn](https://github.com/endernewton/tf-faster-rcnn). Xinlei Chen's repository is based on the python Caffe implementation of faster RCNN available [here](https://github.com/rbgirshick/py-faster-rcnn).
 
 
@@ -7,7 +7,9 @@ A pytorch implementation of faster RCNN detection framework based on Xinlei Chen
 
 此仓库是在[pytorch-faster-rcnn](https://github.com/ruotianluo/pytorch-faster-rcnn)基础下修改，网络结构加入了mask分支，实现了无fpn的mask rcnn. RoIAlign是用的类似[tf-faster-rcnn](https://github.com/endernewton/tf-faster-rcnn)的做法，和kaiming论文有一点点出入。
 ``experiments/cfgs/vgg16.yml``
-
+- faster rcnn 复现mAP: 0.708
+- 无fpn的mask rcnn
+- [Light-Head R-CNN](https://arxiv.org/abs/1711.07264) 复现mAP: 0.709
 ```yml
 # 为了融合全局特征，在roi pooling前加了类似U-Net的东西
 ZDF_GAUSSIAN: False
@@ -20,17 +22,20 @@ LOSS_SUB_CATEGORY_W: 0.5
 # pyramid_crop金字塔roi cat后降维
 # 其他模式可能使最终的输出channel不为512，所以FC6_IN_CHANNEL要随之改动
 POOLING_MODE: crop
-FC6_IN_CHANNEL: 512
-#  类别数目
-CLASS_NUMS: 20
 # 是否做mask分支
 DO_PARSING: True
 # 我们的训练是分两步，一步是先把检测(DO_PARSING: False)训练好
 # 固定检测的所有参数，只训练mask分支
 # 为了方便，训练好检测好把最终模型改名为vgg16，放到data/imagenet_weights，然后设置FIX_FEAT: True
 FIX_FEAT: True
-
+# light rcnn 输出的feature是k*7*7，此处k设置为10 10*7*7=490
+# 且去掉了一个fc的隐层，只留一个2048的fc隐层(无dropout)
+# 且large kernel cmid设置为128
+LIGHT_RCNN: True
+FC6_IN_CHANNEL: 490
+FC7_OUT_CHANNEL: 2048
 ```
+
 ```shell
 # pascal_voc 数据集 vgg16 网络结构 default 标签
  ./experiments/scripts/train_faster_rcnn.sh 0 pascal_voc vgg16 default

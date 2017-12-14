@@ -61,7 +61,7 @@ __C.TRAIN.SUMMARY_INTERVAL = 180
 
 # Scale to use during training (can list multiple scales)
 # The scale is the pixel size of an image's shortest side
-__C.TRAIN.SCALES = (320,)
+__C.TRAIN.SCALES = (600,)
 
 # Max pixel size of the longest side of a scaled input image
 __C.TRAIN.MAX_SIZE = 1000
@@ -167,7 +167,7 @@ __C.TEST = edict()
 
 # Scale to use during testing (can NOT list multiple scales)
 # The scale is the pixel size of an image's shortest side
-__C.TEST.SCALES = (320,)
+__C.TEST.SCALES = (600,)
 
 # Max pixel size of the longest side of a scaled input image
 __C.TEST.MAX_SIZE = 1000
@@ -208,8 +208,7 @@ __C.TEST.MODE = 'nms'
 # Only useful when TEST.MODE is 'top', specifies the number of top proposals to select
 __C.TEST.RPN_TOP_N = 5000
 
-# 如果为true，则清除test的结果，重新test然后计算ap等，否则则利用之前的结果，直接计算ap等
-__C.TEST.CLEAN_PRE_RESULT = True
+
 #
 # ResNet options
 #
@@ -290,15 +289,19 @@ __C.RPN_CHANNELS = 512
 
 # added by rgh
 #__C.HAS_PARSING_LABEL = False
-__C.CLASS_NUMS = 20
+# 如果为true，则清除test的结果，重新test然后计算ap等，否则则利用之前的结果，直接计算ap等
+__C.TEST.CLEAN_PRE_RESULT = True
 __C.TEST.IOU_THRESH = 0.5
 __C.FC6_IN_CHANNEL = 512
+__C.FC7_OUT_CHANNEL = 4096
 __C.FIX_FEAT = False
 __C.ZDF = False
 __C.SUB_CATEGORY = False
 __C.LOSS_SUB_CATEGORY_W = 1.
 __C.ZDF_GAUSSIAN = False
 __C.DO_PARSING = False
+__C.LIGHT_RCNN = False
+
 def get_output_dir(imdb, weights_filename):
   """Return the directory where experimental artifacts are placed.
   If the directory does not exist, it is created.

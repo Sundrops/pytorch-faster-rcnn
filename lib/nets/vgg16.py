@@ -1,3 +1,4 @@
+# coding=utf-8
 # --------------------------------------------------------
 # Tensorflow Faster R-CNN
 # Licensed under The MIT License [see LICENSE for details]
@@ -22,26 +23,32 @@ class vgg16(Network):
     Network.__init__(self)
     self._feat_stride = [16, ]
     self._feat_compress = [1. / float(self._feat_stride[0]), ]
-    self._net_conv_channels = 512
-    self._fc7_channels = 4096
+    self._net_conv_channels = cfg.FC6_IN_CHANNEL
+    self._fc7_channels = cfg.FC7_OUT_CHANNEL
 
   def _init_head_tail(self):
     self.vgg = models.vgg16()
-    # Remove fc8
-    if cfg.FC6_IN_CHANNEL == 512:
-      print('nn.Linear(512 * 7 * 7, 4096)')
-      self.vgg.classifier = nn.Sequential(*list(self.vgg.classifier._modules.values())[:-1])
-    # roi cat_crop
-    else:
-      print('fc6 in channel: ', cfg.FC6_IN_CHANNEL)
+    if cfg.LIGHT_RCNN:
+      # 去除一个隐层的,没有dropout
       self.vgg.classifier = nn.Sequential(
-        nn.Linear(cfg.FC6_IN_CHANNEL * 7 * 7, 4096),
+        nn.Linear(cfg.FC6_IN_CHANNEL * 7 * 7, cfg.FC7_OUT_CHANNEL),
         nn.ReLU(True),
-        nn.Dropout(),
-        nn.Linear(4096, 4096),
-        nn.ReLU(True),
-        nn.Dropout(),
+        # nn.Linear(4096, 4096),
+        # nn.ReLU(True),
+        # nn.Dropout(),
       )
+    else:
+      print('nn.Linear(512 * 7 * 7, 4096)')
+      # Remove fc8
+      self.vgg.classifier = nn.Sequential(*list(self.vgg.classifier._modules.values())[:-1])
+      # self.vgg.classifier = nn.Sequential(
+      #   nn.Linear(cfg.FC6_IN_CHANNEL * 7 * 7, 4096),
+      #   nn.ReLU(True),
+      #   nn.Dropout(),
+      #   nn.Linear(4096, 4096),
+      #   nn.ReLU(True),
+      #   nn.Dropout(),
+      # )
     if cfg.FIX_FEAT:
       # Fix all layers
       for layer in range(30):
@@ -58,7 +65,7 @@ class vgg16(Network):
   def _image_to_head(self):
     net_conv = self._layers['head'](self._image)
     self._act_summaries['conv'] = net_conv
-    
+
     return net_conv
 
   def _head_to_tail(self, pool5):
@@ -80,12 +87,12 @@ class vgg16(Network):
       model_dict.update(state_dict)
       self.load_state_dict(model_dict)
     else:
-      model_dict = self.state_dict()
+      model_dict = self.vgg.state_dict()
       state_dict = {k: v for k, v in state_dict.items()
                     if k in model_dict and v.shape == model_dict[k].shape}
       print('state_dict matched keys: ', state_dict.keys())
       model_dict.update(state_dict)
-      self.load_state_dict(model_dict)
+      self.vgg.load_state_dict(model_dict)
 
       '''
       if cfg.FC6_IN_CHANNEL == 512:

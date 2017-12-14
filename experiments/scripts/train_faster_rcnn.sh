@@ -31,11 +31,19 @@ case ${DATASET} in
     ANCHORS="[4,8,16,32]"
     RATIOS="[0.5,1,2]"
     ;;
-  Lip_320)
+  Lip_320_full)
     TRAIN_IMDB="Lip_320_train_full"
     TEST_IMDB="Lip_320_val"
     STEPSIZE="[100000]"
     ITERS=280000
+    ANCHORS="[4,8,16,32]"
+    RATIOS="[0.5,1,2]"
+    ;;
+  Lip_320)
+    TRAIN_IMDB="Lip_320_train"
+    TEST_IMDB="Lip_320_val"
+    STEPSIZE="[50000]"
+    ITERS=70000
     ANCHORS="[4,8,16,32]"
     RATIOS="[0.5,1,2]"
     ;;

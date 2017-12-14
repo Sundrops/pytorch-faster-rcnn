@@ -132,6 +132,12 @@ class SolverWrapper(object):
                         'weight_decay': cfg.TRAIN.BIAS_DECAY and cfg.TRAIN.WEIGHT_DECAY or 0}]
           else:
             params += [{'params': [value], 'lr': 10*lr, 'weight_decay': cfg.TRAIN.WEIGHT_DECAY}]
+        elif 'lightrcnn' in key:
+          if 'bias' in key:
+            params += [{'params': [value], 'lr': 3 * lr * (cfg.TRAIN.DOUBLE_BIAS + 1),
+                        'weight_decay': cfg.TRAIN.BIAS_DECAY and cfg.TRAIN.WEIGHT_DECAY or 0}]
+          else:
+            params += [{'params': [value], 'lr': 3 * lr, 'weight_decay': cfg.TRAIN.WEIGHT_DECAY}]
         else:
           if 'bias' in key:
             params += [{'params': [value], 'lr': lr * (cfg.TRAIN.DOUBLE_BIAS + 1),

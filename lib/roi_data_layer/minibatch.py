@@ -32,12 +32,12 @@ def get_minibatch(roidb, num_classes):
 
   blobs = {'data': im_blob}
   parsing_labels = None
-  if roidb[0]['do_parsing']:
+  if cfg.DO_PARSING:
     label = cv2.imread(roidb[0]['parsing_labels'], cv2.IMREAD_GRAYSCALE)
     label = cv2.resize(label, None, None, fx=im_scales[0], fy=im_scales[0],
                        interpolation=cv2.INTER_NEAREST)
-    parsing_labels = np.zeros((cfg.CLASS_NUMS, label.shape[0], label.shape[1]))
-    for i in range(cfg.CLASS_NUMS):
+    parsing_labels = np.zeros((num_classes, label.shape[0], label.shape[1]))
+    for i in range(num_classes):
       mask = label == i
       parsing_labels[i][mask] = 1
 

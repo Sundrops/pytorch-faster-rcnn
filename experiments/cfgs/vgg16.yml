@@ -1,7 +1,6 @@
 EXP_DIR: vgg16
-
 TRAIN:
-  USE_FLIPPED: False
+  USE_FLIPPED: True  #false for parsing
   HAS_RPN: True
   IMS_PER_BATCH: 1
   BBOX_NORMALIZE_TARGETS_PRECOMPUTED: True
@@ -12,17 +11,20 @@ TRAIN:
   DISPLAY: 20
   BATCH_SIZE: 256
   SNAPSHOT_PREFIX: vgg16_faster_rcnn
+  SCALES: [600]
 TEST:
+  SCALES: [600]
   HAS_RPN: True
   IOU_THRESH: 0.5
   CLEAN_PRE_RESULT: True
 ZDF_GAUSSIAN: False
-ZDF: True
-FC6_IN_CHANNEL: 512
-CLASS_NUMS: 20
-FIX_FEAT: True
-DO_PARSING: True
+ZDF: False
+FIX_FEAT: False
+DO_PARSING: False
 POOLING_MODE: crop
 SUB_CATEGORY: False
 LOSS_SUB_CATEGORY_W: 0.5
+FC7_OUT_CHANNEL: 2048
+FC6_IN_CHANNEL: 490 #512 #490 #512 #512 490
+LIGHT_RCNN: True #True
 # crop_cat_gtscoremap  crop crop_only_gtscoremap pyramid_crop_sum pyramid_crop
