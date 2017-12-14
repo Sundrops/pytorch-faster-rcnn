@@ -9,7 +9,7 @@ A pytorch implementation of faster RCNN detection framework based on Xinlei Chen
 ``experiments/cfgs/vgg16.yml``
 - faster rcnn 复现mAP: 0.708
 - 无fpn的mask rcnn
-- [Light-Head R-CNN](https://arxiv.org/abs/1711.07264) 复现mAP: 0.709
+- [Light-Head R-CNN](https://arxiv.org/abs/1711.07264) 复现mAP: 0.711
 ```yml
 # 为了融合全局特征，在roi pooling前加了类似U-Net的东西
 ZDF_GAUSSIAN: False
